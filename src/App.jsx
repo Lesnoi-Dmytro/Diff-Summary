@@ -1,34 +1,63 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [diceValue, setDiceValue] = useState(1)
+  const [isRolling, setIsRolling] = useState(false)
+
+  const rollDice = () => {
+    setIsRolling(true)
+    
+    // Animate the dice rolling
+    let rollCount = 0
+    const rollInterval = setInterval(() => {
+      setDiceValue(Math.floor(Math.random() * 6) + 1)
+      rollCount++
+      
+      if (rollCount >= 10) {
+        clearInterval(rollInterval)
+        setIsRolling(false)
+      }
+    }, 100)
+  }
+
+  const getDiceFace = (value) => {
+    const dots = {
+      1: [4],
+      2: [0, 8],
+      3: [0, 4, 8],
+      4: [0, 2, 6, 8],
+      5: [0, 2, 4, 6, 8],
+      6: [0, 2, 3, 5, 6, 8]
+    }
+    
+    return (
+      <div className="dice-face">
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+          <div 
+            key={i} 
+            className={`dot ${dots[value].includes(i) ? 'active' : ''}`}
+          />
+        ))}
+      </div>
+    )
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app">
+      <h1>🎲 Dice Roller</h1>
+      <div className={`dice ${isRolling ? 'rolling' : ''}`}>
+        {getDiceFace(diceValue)}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <button 
+        onClick={rollDice} 
+        disabled={isRolling}
+        className="roll-button"
+      >
+        {isRolling ? 'Rolling...' : 'Roll Dice'}
+      </button>
+      <p className="result">You rolled: {diceValue}</p>
+    </div>
   )
 }
 
